@@ -77,7 +77,6 @@ blogRoutes.get("/bulk", async (c) => {
 
     try {
         const getAllBlog = await prisma.post.findMany();
-        console.log(getAllBlog);
         return c.json(getAllBlog);
     } catch (error) {
         return c.json({
