@@ -1,9 +1,9 @@
 import { Hono } from "hono";
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
-import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 import authMiddleware from "./authMiddleware";
+import { createSchema, updateSchema } from "jayeshyadav_medium_common";
 
 const blogRoutes = new Hono<{
     Bindings: {
@@ -15,12 +15,6 @@ const blogRoutes = new Hono<{
 
 // authMiddleware
 blogRoutes.use("/*", authMiddleware);
-
-const createSchema = z.object({
-    title: z.string(),
-    content: z.string(),
-    published: z.boolean().optional(),
-});
 
 // create blog
 blogRoutes.post("/", zValidator("json", createSchema), async (c) => {
@@ -42,8 +36,6 @@ blogRoutes.post("/", zValidator("json", createSchema), async (c) => {
         });
     }
 });
-
-const updateSchema = createSchema.partial().extend({ id: z.string() });
 
 // update blog
 blogRoutes.put("/", zValidator("json", updateSchema), async (c) => {

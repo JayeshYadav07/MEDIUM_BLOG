@@ -1,9 +1,9 @@
 import { Hono } from "hono";
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
-import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 import { sign } from "hono/jwt";
+import { signupSchema, loginSchema } from "jayeshyadav_medium_common";
 
 const userRoutes = new Hono<{
     Bindings: {
@@ -12,12 +12,6 @@ const userRoutes = new Hono<{
     };
     Variables: { userUuid: string };
 }>();
-
-const signupSchema = z.object({
-    email: z.string(),
-    password: z.string(),
-    name: z.string().optional(),
-});
 
 // Create User
 userRoutes.post("/signup", zValidator("json", signupSchema), async (c) => {
@@ -43,11 +37,6 @@ userRoutes.post("/signup", zValidator("json", signupSchema), async (c) => {
             msg: "Something went wrong!",
         });
     }
-});
-
-const loginSchema = z.object({
-    email: z.string(),
-    password: z.string(),
 });
 
 // Login User
