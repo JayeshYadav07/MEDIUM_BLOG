@@ -16,16 +16,16 @@ const blogRoutes = new Hono<{
 // authMiddleware
 blogRoutes.use("/*", authMiddleware);
 
-const blogSchema = z.object({
+const createSchema = z.object({
     title: z.string(),
     content: z.string(),
     published: z.boolean().optional(),
     authorId: z.string(),
 });
 
-type blogType = z.infer<typeof blogSchema>;
+type CreateBlog = z.infer<typeof createSchema>;
 // create blog
-blogRoutes.post("/", zValidator("json", blogSchema), async (c) => {
+blogRoutes.post("/", zValidator("json", createSchema), async (c) => {
     const prisma = new PrismaClient({
         datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate());
@@ -34,7 +34,7 @@ blogRoutes.post("/", zValidator("json", blogSchema), async (c) => {
         const body = await c.req.json();
 
         // Create the base data object
-        let data: blogType = {
+        let data: CreateBlog = {
             title: body.title,
             content: body.content,
             authorId: body.authorId,
@@ -56,9 +56,33 @@ blogRoutes.post("/", zValidator("json", blogSchema), async (c) => {
     }
 });
 
-// PUT /api/v1/blog
-blogRoutes.put("/", (c) => {
-    return c.text("POST /api/v1/blog");
+const updateSchema = createSchema
+    .pick({ title: true, content: true, published: true })
+    .partial()
+    .extend({ id: z.string() });
+
+// update blog
+blogRoutes.put("", zValidator("json", updateSchema), async (c) => {
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate());
+
+    const userId = c.get("userUuid");
+    try {
+        const body = await c.req.json();
+        const updatedPost = await prisma.post.update({
+            where: {
+                id: body.id,
+                authorId: userId,
+            },
+            data: body,
+        });
+        return c.json(updatedPost);
+    } catch (error) {
+        return c.json({
+            msg: "Something went wrong!",
+        });
+    }
 });
 
 // GET /api/v1/blog/:id
