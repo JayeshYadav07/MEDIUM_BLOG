@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
-import { sign, verify } from "hono/jwt";
+import { sign } from "hono/jwt";
 
 const userRoutes = new Hono<{
     Bindings: {
