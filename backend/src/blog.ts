@@ -20,10 +20,8 @@ const createSchema = z.object({
     title: z.string(),
     content: z.string(),
     published: z.boolean().optional(),
-    authorId: z.string(),
 });
 
-type CreateBlog = z.infer<typeof createSchema>;
 // create blog
 blogRoutes.post("/", zValidator("json", createSchema), async (c) => {
     const prisma = new PrismaClient({
@@ -32,20 +30,9 @@ blogRoutes.post("/", zValidator("json", createSchema), async (c) => {
 
     try {
         const body = await c.req.json();
-
-        // Create the base data object
-        let data: CreateBlog = {
-            title: body.title,
-            content: body.content,
-            authorId: body.authorId,
-        };
-
-        // Conditionally add the 'published' field if it exists
-        if (body.published !== undefined) {
-            data.published = body.published;
-        }
+        const userId = c.get("userUuid");
         const blog = await prisma.post.create({
-            data,
+            data: { ...body, authorId: userId },
         });
 
         return c.json(blog);
@@ -56,10 +43,7 @@ blogRoutes.post("/", zValidator("json", createSchema), async (c) => {
     }
 });
 
-const updateSchema = createSchema
-    .pick({ title: true, content: true, published: true })
-    .partial()
-    .extend({ id: z.string() });
+const updateSchema = createSchema.partial().extend({ id: z.string() });
 
 // update blog
 blogRoutes.put("", zValidator("json", updateSchema), async (c) => {
@@ -70,14 +54,14 @@ blogRoutes.put("", zValidator("json", updateSchema), async (c) => {
     const userId = c.get("userUuid");
     try {
         const body = await c.req.json();
-        const updatedPost = await prisma.post.update({
+        const updatedBlog = await prisma.post.update({
             where: {
                 id: body.id,
                 authorId: userId,
             },
             data: body,
         });
-        return c.json(updatedPost);
+        return c.json(updatedBlog);
     } catch (error) {
         return c.json({
             msg: "Something went wrong!",
@@ -85,9 +69,27 @@ blogRoutes.put("", zValidator("json", updateSchema), async (c) => {
     }
 });
 
-// GET /api/v1/blog/:id
-blogRoutes.get("/:id", (c) => {
-    return c.text("GET /api/v1/blog/:id");
+// get blog
+blogRoutes.get("/:id", async (c) => {
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate());
+
+    const id = c.req.param("id");
+    const userId = c.get("userUuid");
+    try {
+        const getBlog = await prisma.post.findUnique({
+            where: {
+                id: id,
+                authorId: userId,
+            },
+        });
+        return c.json(getBlog);
+    } catch (error) {
+        return c.json({
+            msg: "Something went wrong!",
+        });
+    }
 });
 
 // GET /api/v1/blog/bulk
