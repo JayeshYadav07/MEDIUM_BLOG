@@ -46,7 +46,7 @@ blogRoutes.post("/", zValidator("json", createSchema), async (c) => {
 const updateSchema = createSchema.partial().extend({ id: z.string() });
 
 // update blog
-blogRoutes.put("", zValidator("json", updateSchema), async (c) => {
+blogRoutes.put("/", zValidator("json", updateSchema), async (c) => {
     const prisma = new PrismaClient({
         datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate());
@@ -62,6 +62,23 @@ blogRoutes.put("", zValidator("json", updateSchema), async (c) => {
             data: body,
         });
         return c.json(updatedBlog);
+    } catch (error) {
+        return c.json({
+            msg: "Something went wrong!",
+        });
+    }
+});
+
+// get all blog
+blogRoutes.get("/bulk", async (c) => {
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate());
+
+    try {
+        const getAllBlog = await prisma.post.findMany();
+        console.log(getAllBlog);
+        return c.json(getAllBlog);
     } catch (error) {
         return c.json({
             msg: "Something went wrong!",
@@ -90,11 +107,6 @@ blogRoutes.get("/:id", async (c) => {
             msg: "Something went wrong!",
         });
     }
-});
-
-// GET /api/v1/blog/bulk
-blogRoutes.get("/bulk", (c) => {
-    return c.text("GET /api/v1/blog/bulk");
 });
 
 export default blogRoutes;
