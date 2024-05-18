@@ -10,6 +10,7 @@ const app = new Hono<{
         DATABASE_URL: string;
         SECRET_KEY: string;
     };
+    Variables: { userUuid: string };
 }>();
 
 app.get("/", (c) => {
@@ -84,6 +85,22 @@ app.post("/app/v1/user/signin", zValidator("json", loginSchema), async (c) => {
             msg: "Something went wrong!",
         });
     }
+});
+
+app.use("/app/v1/blog/*", async (c, next) => {
+    const jwt: string = c.req.header("Authorization")!;
+    if (!jwt) {
+        c.status(401);
+        return c.json({ error: "unauthorized" });
+    }
+    try {
+        const token = jwt.split(" ")[1];
+        const payload = await verify(token, c.env.SECRET_KEY);
+        c.set("userUuid", payload.userId);
+    } catch (error) {
+        return c.json({ error });
+    }
+    await next();
 });
 
 // POST /api/v1/blog
