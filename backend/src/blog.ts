@@ -32,7 +32,7 @@ blogRoutes.post("/", zValidator("json", createSchema), async (c) => {
         return c.json(blog);
     } catch (error) {
         return c.json({
-            msg: "Something went wrong!",
+            error: "Something went wrong!",
         });
     }
 });
@@ -56,7 +56,7 @@ blogRoutes.put("/", zValidator("json", updateSchema), async (c) => {
         return c.json(updatedBlog);
     } catch (error) {
         return c.json({
-            msg: "Something went wrong!",
+            error: "Something went wrong!",
         });
     }
 });
@@ -72,7 +72,7 @@ blogRoutes.get("/bulk", async (c) => {
         return c.json(getAllBlog);
     } catch (error) {
         return c.json({
-            msg: "Something went wrong!",
+            error: "Something went wrong!",
         });
     }
 });
@@ -95,7 +95,7 @@ blogRoutes.get("/:id", async (c) => {
         return c.json(getBlog);
     } catch (error) {
         return c.json({
-            msg: "Something went wrong!",
+            error: "Something went wrong!",
         });
     }
 });

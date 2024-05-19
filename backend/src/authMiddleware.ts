@@ -12,7 +12,7 @@ const authMiddleware = async (c: Context, next: Next) => {
         const payload = await verify(token, c.env.SECRET_KEY);
         c.set("userUuid", payload.userId);
     } catch (error) {
-        return c.json({ error });
+        return c.json({ error: "unauthorized" });
     }
     await next();
 };

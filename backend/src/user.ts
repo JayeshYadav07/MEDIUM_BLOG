@@ -34,7 +34,7 @@ userRoutes.post("/signup", zValidator("json", signupSchema), async (c) => {
         });
     } catch (error) {
         return c.json({
-            msg: "Something went wrong!",
+            error: "Something went wrong!",
         });
     }
 });
@@ -55,7 +55,7 @@ userRoutes.post("/signin", zValidator("json", loginSchema), async (c) => {
         });
         if (!user) {
             return c.json({
-                msg: "Wrong Credentials!",
+                error: "Wrong Credentials!",
             });
         } else {
             const token = await sign({ userId: user.id }, c.env.SECRET_KEY);
@@ -67,7 +67,7 @@ userRoutes.post("/signin", zValidator("json", loginSchema), async (c) => {
         }
     } catch (error) {
         return c.json({
-            msg: "Something went wrong!",
+            error: "Something went wrong!",
         });
     }
 });
