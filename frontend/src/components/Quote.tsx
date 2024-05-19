@@ -1,6 +1,6 @@
 function Quote() {
     return (
-        <div className="h-screen bg-slate-200 flex flex-col justify-center items-center invisible lg:visible">
+        <div className="h-screen bg-slate-200 flex flex-col justify-center items-center">
             <div className="max-w-lg font-semibold leading-relaxed">
                 <div className="text-3xl text-left my-2">
                     "Don’t try to tell the customer what he wants. If you want
