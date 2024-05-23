@@ -26,6 +26,7 @@ function Auth({ type }: { type: "signup" | "signin" }) {
             if (!data.error) {
                 toast.success(data.msg, { autoClose: 500 });
                 setTimeout(() => {
+                    localStorage.setItem("tokens", data.token);
                     navigate("/blog");
                 }, 1000);
             } else {
