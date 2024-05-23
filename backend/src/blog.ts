@@ -84,12 +84,10 @@ blogRoutes.get("/:id", async (c) => {
     }).$extends(withAccelerate());
 
     const id = c.req.param("id");
-    const userId = c.get("userUuid");
     try {
         const getBlog = await prisma.post.findUnique({
             where: {
                 id: id,
-                authorId: userId,
             },
         });
         return c.json(getBlog);
