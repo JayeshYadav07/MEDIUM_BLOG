@@ -16,7 +16,7 @@ exports.loginSchema = zod_1.default.object({
 });
 exports.createSchema = zod_1.default.object({
     title: zod_1.default.string(),
-    content: zod_1.default.string(),
+    content: zod_1.default.string().min(100),
     published: zod_1.default.boolean().optional(),
 });
 exports.updateSchema = zod_1.default.object({
