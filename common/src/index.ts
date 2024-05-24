@@ -16,7 +16,7 @@ export type LoginType = z.infer<typeof loginSchema>;
 
 export const createSchema = z.object({
     title: z.string(),
-    content: z.string(),
+    content: z.string().min(100),
     published: z.boolean().optional(),
 });
 export type CreateType = z.infer<typeof createSchema>;
