@@ -28,7 +28,7 @@ function BlogCard({ id, name, created_at, title, content }: blogCardPropsType) {
                 <h2 className="text-2xl font-bold my-1">
                     {firstLetterUpperCase(title)}
                 </h2>
-                <p className="font-serif tracking-wide">
+                <p className="font-serif tracking-wide w-full">
                     {firstLetterUpperCase(
                         content.length > 100
                             ? content.substring(0, 100) + "..."
