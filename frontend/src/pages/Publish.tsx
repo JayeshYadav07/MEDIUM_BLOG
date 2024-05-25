@@ -7,8 +7,10 @@ import axios from "axios";
 import { BACKEND_URL } from "../config/config";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
 function Publish() {
+    const navigate = useNavigate();
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     function sendRequest() {
@@ -30,6 +32,7 @@ function Publish() {
                     toast.success("Post crated successfully", {
                         autoClose: 500,
                     });
+                    navigate("/blog");
                 } else {
                     toast.error(data.error, { autoClose: 3000 });
                 }
